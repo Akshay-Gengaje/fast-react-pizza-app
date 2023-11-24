@@ -2,7 +2,7 @@ import { useState } from "react";
 import Button from "../../ui/Button";
 
 function CreateUser() {
-  const [username, setUsername] = useState("Jonas");
+  const [username, setUsername] = useState("");
 
   function handleSubmit(e) {
     e.preventDefault();
