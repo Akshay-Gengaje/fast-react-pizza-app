@@ -1,9 +1,8 @@
-// import { useState } from "react";
-
-import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
-import { createOrder } from "../../services/apiRestaurant";
-import { useState } from "react";
+// import { useState } from 'react';
+import { Form, useActionData, useNavigation } from "react-router-dom";
+// import { createOrder } from '../../services/apiRestaurant';
 import Button from "../../ui/Button";
+import { useSelector } from "react-redux";
 
 // https://uibakery.io/regex-library/phone-number
 const isValidPhone = (str) =>
@@ -38,20 +37,21 @@ const fakeCart = [
 function CreateOrder() {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
+  const userName = useSelector((state) => state.user.username);
   const formErrors = useActionData();
-  const [withPriority, setWithPriority] = useState(false);
+
+  // const [withPriority, setWithPriority] = useState(false);
   const cart = fakeCart;
 
   return (
     <div className="px-4 py-6">
-      <h2 className="mb-8 text-xl font-semibold">
-        Ready to order? Let&apos;s go!
-      </h2>
+      <h2 className="mb-8 text-xl font-semibold">Ready to order? Let&apos;s go!</h2>
 
+      {/* <Form method="POST" action="/order/new"> */}
       <Form method="POST">
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
           <label className="sm:basis-40">First Name</label>
-          <input className="input grow" type="text" name="customer" required />
+          <input className="input grow" type="text" name="customer" required defaultValue={userName} />
         </div>
 
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -66,7 +66,7 @@ function CreateOrder() {
           </div>
         </div>
 
-        <div className="relative mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
           <label className="sm:basis-40">Address</label>
           <div className="grow">
             <input
@@ -84,24 +84,24 @@ function CreateOrder() {
             type="checkbox"
             name="priority"
             id="priority"
-            value={withPriority}
-            onChange={(e) => setWithPriority(e.target.checked)}
+            // value={withPriority}
+            // onChange={(e) => setWithPriority(e.target.checked)}
           />
-          <label htmlFor="priority">Want to yo give your order priority?</label>
+          <label htmlFor="priority" className="font-medium">
+            Want to yo give your order priority?
+          </label>
         </div>
 
         <div>
           <input type="hidden" name="cart" value={JSON.stringify(cart)} />
           <Button disabled={isSubmitting} type="primary">
-            {isSubmitting ? "Placing Order..." : "Order now"}
+            {isSubmitting ? "Placing order...." : "Order now"}
           </Button>
         </div>
       </Form>
     </div>
   );
 }
-
-export default CreateOrder;
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -112,12 +112,21 @@ export async function action({ request }) {
     cart: JSON.parse(data.cart),
     priority: data.priority === "on",
   };
-  const error = {};
-  if (!isValidPhone(order.phone)) {
-    error.phone =
+
+  const errors = {};
+  if (!isValidPhone(order.phone))
+    errors.phone =
       "Please give us your correct phone number. We might need it to contact you.";
-  }
-  if (Object.keys(error).length > 0) return error;
-  const newOrder = await createOrder(order);
-  return redirect(`/order/${newOrder.id}`);
+
+  if (Object.keys(errors).length > 0) return errors;
+
+  // If everything is okay, create new order and redirect
+
+  // const newOrder = await createOrder(order);
+
+  // return redirect(`/order/${newOrder.id}`);
+
+  return null;
 }
+
+export default CreateOrder;
