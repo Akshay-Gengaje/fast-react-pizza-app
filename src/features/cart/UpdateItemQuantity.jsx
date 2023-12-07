@@ -3,7 +3,7 @@ import Button from "../../ui/Button";
 import { decreaseItemQuantity, increaseItemQuantity } from "./CartSlice";
 
 const UpdateItemQuantity = ({ pizzaId, currentQuantity }) => {
-    console.log(currentQuantity)
+
   const dispatch = useDispatch();
   return (
     <div className="flex items-center gap-1 md:gap-3">
